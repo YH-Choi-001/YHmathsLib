@@ -47,12 +47,12 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
     lower_val(init_lower_val),
     special_states(NORMAL_FLOATING)
     {
-        if (lower_val == 0LL && upper_val != 0LL) {
+        if (lower_val == 0 && upper_val != 0) {
             myself_to_inf();
         } else {
-            if (lower_val < 0LL) {
-                upper_val = 0 - upper_val;
-                lower_val = 0 - lower_val;
+            if (lower_val < 0) {
+                upper_val = -upper_val;
+                lower_val = -lower_val;
             }
             upper_val = YH::Lib::Func::maths::fract_simp_int(upper_val, lower_val)[0];
             lower_val = YH::Lib::Func::maths::get_result(1);
@@ -89,7 +89,7 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
         if (this->special_states == INFINITY_FLOATING)
             return static_cast<Func::maths::largest_int>(0x7FFEE245EAC0LL);
         else if (this->special_states == NOT_A_NUM_FLOATING)
-            return 0LL;
+            return 0;
         return upper_val / lower_val;
     }
 
@@ -106,9 +106,9 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
         // (upper_val % lower_val) ? (upper_val > 0 ? 1 : -1) : (upper_val / lower_val)
         // (upper_val / lower_val) + (upper_val % lower_val) * (upper_val > 0 ? 1 : -1)
         if (this->special_states == INFINITY_FLOATING)
-            return static_cast<Func::maths::largest_int>(0x7FFEE245EAC0LL);
+            return static_cast<Func::maths::largest_int>(0x7FFEE245EAC0);
         else if (this->special_states == NOT_A_NUM_FLOATING)
-            return 0LL;
+            return 0;
         return (upper_val / lower_val) + (upper_val % lower_val) * (upper_val > 0 ? 1 : -1);
     }
 
@@ -122,18 +122,18 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
             // else
                 // return rnd_dn()
         if (this->special_states == INFINITY_FLOATING)
-            return static_cast<Func::maths::largest_int>(0x7FFEE245EAC0LL);
+            return static_cast<Func::maths::largest_int>(0x7FFEE245EAC0);
         else if (this->special_states == NOT_A_NUM_FLOATING)
-            return 0LL;
-        return (upper_val / lower_val) - ( (upper_val < 0LL) && (upper_val % lower_val) );
+            return 0;
+        return (upper_val / lower_val) - ( (upper_val < 0) && (upper_val % lower_val) );
     }
 
     YH::Lib::Func::maths::largest_int YH::Lib::Fraction::ceil () const {
         // (   RND_DOWN(x) + (x > 0.0L && x > RND_DOWN(x))   )
         if (this->special_states == INFINITY_FLOATING)
-            return static_cast<Func::maths::largest_int>(0x7FFEE245EAC0LL);
+            return static_cast<Func::maths::largest_int>(0x7FFEE245EAC0);
         else if (this->special_states == NOT_A_NUM_FLOATING)
-            return 0LL;
+            return 0;
         return (upper_val / lower_val) + ( (upper_val > 0LL) && (upper_val % lower_val) );
     }
 
@@ -154,7 +154,7 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
             myself_to_nan();
         }
         else {
-            upper_val = YH::Lib::Func::maths::fract_simp(rhs, 1.0L)[0];
+            upper_val = YH::Lib::Func::maths::fract_simp(rhs, 1.0)[0];
             lower_val = YH::Lib::Func::maths::get_result(1);
             special_states = NORMAL_FLOATING;
         }
@@ -162,13 +162,13 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
     }
 
     YH::Lib::Fraction &YH::Lib::Fraction::assign (const Func::maths::largest_int assign_upper_val, const Func::maths::largest_int assign_lower_val) {
-        if (assign_lower_val == 0LL && assign_upper_val != 0LL) {
+        if (assign_lower_val == 0 && assign_upper_val != 0) {
             myself_to_inf();
         } else {
             special_states = NORMAL_FLOATING;
-            if (assign_lower_val < 0LL) {
-                upper_val = 0 - assign_upper_val;
-                lower_val = 0 - assign_lower_val;
+            if (assign_lower_val < 0) {
+                upper_val = - assign_upper_val;
+                lower_val = - assign_lower_val;
             } else {
                 upper_val = assign_upper_val;
                 lower_val = assign_lower_val;
@@ -376,7 +376,7 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
             return nan_obj();
         }
         else {
-            YH::Lib::Func::maths::fract_simp(val, 1.0L);
+            YH::Lib::Func::maths::fract_simp(val, 1.0);
             YH::Lib::Fraction to_return (static_cast<largest_int>(get_result(0)), static_cast<largest_int>(get_result(1)));
             return to_return;
         }
