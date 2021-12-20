@@ -1649,7 +1649,7 @@ const YH::Lib::Func::maths::largest_float *YH::Lib::Func::maths::fract_simp (con
 //     return to_return;
 // }
 
-int16_t YH::Lib::Func::maths::charToVal (const char input) {
+int8_t YH::Lib::Func::maths::char_to_val (const char input) {
     switch (input) {
         case '0':
             return 0;
@@ -1792,7 +1792,7 @@ int16_t YH::Lib::Func::maths::charToVal (const char input) {
     }
 }
 
-char YH::Lib::Func::maths::valToCapLetter (const int16_t input) {
+char YH::Lib::Func::maths::val_to_cap_letter (const int16_t input) {
     switch (input) {
         case -1:
             return '-';
@@ -1921,23 +1921,23 @@ char YH::Lib::Func::maths::valToCapLetter (const int16_t input) {
 YH::Lib::Func::maths::largest_float YH::Lib::Func::maths::base_n_to_base_10 (const char *str, const uint16_t base_from, char* *remaining_unrecognized_str) {
     largest_int int_val = 0;
     largest_uint i = 0;
-    int16_t pcsing_val = 0;
+    int8_t pcsing_val = 0;
     for (; str[i] != '.' && str[i] != '\0'; i++) {
-        pcsing_val = charToVal(str[i]);
-        if (pcsing_val >= base_from || pcsing_val == -1) {
-            if (remaining_unrecognized_str != NULL) *remaining_unrecognized_str = static_cast<char *>((void *)(str + i));
+        pcsing_val = char_to_val(str[i]);
+        if (pcsing_val == -1 || static_cast<uint16_t>(pcsing_val) >= base_from) {
+            if (remaining_unrecognized_str != NULL) *remaining_unrecognized_str = const_cast<char *>(str + i);
             return int_val;
         }
         int_val *= base_from;
-        int_val += charToVal(str[i]);
+        int_val += char_to_val(str[i]);
     }
     if (str[i++] == '.') {
         largest_float float_val = int_val;
         largest_float base_powering = 1;
         for (; str[i] != '\0'; i++) {
-            pcsing_val = charToVal(str[i]);
-            if (pcsing_val >= base_from || pcsing_val == -1) {
-                if (remaining_unrecognized_str != NULL) *remaining_unrecognized_str = static_cast<char *>((void *)(str + i));
+            pcsing_val = char_to_val(str[i]);
+            if (pcsing_val == -1 || static_cast<uint16_t>(pcsing_val) >= base_from) {
+                if (remaining_unrecognized_str != NULL) *remaining_unrecognized_str = const_cast<char *>(str + i);
                 return float_val;
             }
             base_powering /= base_from;
@@ -2063,7 +2063,7 @@ const char *YH::Lib::Func::maths::base_10_to_base_n (const largest_float val, co
     if (holding_str_cal_val[str_max_len - 2] == '.') holding_str[str_max_len - 2] = '\0';
     holding_str_cal_val[str_max_len - 1] = -255;
     for (largest_uint i = 0; i < str_max_len; i++) {
-        holding_str[i] = valToCapLetter(holding_str_cal_val[i]);
+        holding_str[i] = val_to_cap_letter(holding_str_cal_val[i]);
     }
     pvt::assignToArray(holding_str, str_max_len);
     return pvt::char_result.raw_ptr();
@@ -2126,20 +2126,24 @@ const YH::Lib::Func::maths::largest_float *YH::Lib::Func::maths::intercept_of_2_
     if (m1 == INFINITY || m1 == NAN || c1 == INFINITY || c1 == NAN || m2 == INFINITY || m2 == NAN || c2 == INFINITY || c2 == NAN) {
         // line 1 or line 2 is vertical line
         // no intercepts
-        pvt::assignToArray((largest_float[2]){NAN,NAN}, 2);
+        const largest_float temp [2] = {NAN, NAN};
+        pvt::assignToArray(temp, 2);
     }
     if (m1 == m2) {
         // both straight lines have the same slope
         if (c1==c2) {
             // infinite intercepts
-            pvt::assignToArray((largest_float[2]){INFINITY,INFINITY}, 2);
+            const largest_float temp [2] = {INFINITY, INFINITY};
+            pvt::assignToArray(temp, 2);
         } else {
             // no intercepts
-            pvt::assignToArray((largest_float[2]){NAN,NAN}, 2);
+            const largest_float temp [2] = {NAN, NAN};
+            pvt::assignToArray(temp, 2);
         }
     } else {
         const largest_float x = (c2-c1) / (m1-m2);
-        pvt::assignToArray((largest_float[2]){x, m1*x+c1}, 2);
+        const largest_float temp [2] = {x, m1*x+c1};
+        pvt::assignToArray(temp, 2);
     }
     return pvt::result.raw_ptr();
 }
@@ -2158,24 +2162,28 @@ const YH::Lib::Func::maths::largest_float *YH::Lib::Func::maths::intercept_of_2_
         if (c1/a1 == c2/a2) {
             // same x-intercept
             // infinite intercepts
-            pvt::assignToArray((largest_float[2]){INFINITY,INFINITY}, 2);
+            const largest_float temp [2] = {INFINITY, INFINITY};
+            pvt::assignToArray(temp, 2);
         } else {
             // different x-intercept
             // no intercepts
-            pvt::assignToArray((largest_float[2]){NAN,NAN}, 2);
+            const largest_float temp [2] = {NAN, NAN};
+            pvt::assignToArray(temp, 2);
         }
     } else if (b1_is0) {
         // line 1 is vertical line
         // a1x + c1 == 0
         // x == -c1/a1
         const largest_float x = -c1/a1;
-        pvt::assignToArray((largest_float[2]){x, -a2*x/b2+c2}, 2); // use line 2 constants bc it is not a vertical line
+        const largest_float temp [2] = {x, -a2*x/b2+c2};
+        pvt::assignToArray(temp, 2); // use line 2 constants bc it is not a vertical line
     } else if (b2_is0) {
         // line 2 is vertical line
         // a2x + c2 == 0
         // x == -c2/a2
         const largest_float x = -c2/a2;
-        pvt::assignToArray((largest_float[2]){x, -a1*x/b1+c1}, 2); // use line 1 constants bc it is not a vertical line
+        const largest_float temp [2] = {x, -a1*x/b1+c1};
+        pvt::assignToArray(temp, 2); // use line 1 constants bc it is not a vertical line
     } else {
         // neither one is vertical line
         intercept_of_2_st_lines(-a1/b1, -c1/b1, -a2/b2, -c2/b2);

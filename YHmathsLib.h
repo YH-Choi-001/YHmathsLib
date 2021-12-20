@@ -371,6 +371,8 @@ namespace YH {
                 bool rough_equal (const largest_float lhs, const largest_float rhs, const uint8_t cmp_len = 12);
 
                 // trigonometry
+                // this library does not allow changing modes when using trigonometric functions
+                // as that is 
 
                 // trigonometry in radian mode
 
@@ -438,20 +440,20 @@ namespace YH {
                 template <class Return_type>
                 // return input value in a positive num
                 // output == |input|
-                Return_type toPositive (const Return_type input);
+                Return_type to_positive (const Return_type input);
                 template <class Return_type>
                 // return input value in a negative num
                 // output == - |input|
-                Return_type toNegative (const Return_type input);
+                Return_type to_negative (const Return_type input);
 
                 // definition of template functions
 
                 template <class Return_type>
                 Return_type absolute (const Return_type input) { return input < 0 ? -input : input; }
                 template <class Return_type>
-                Return_type toPositive (const Return_type input) { return input < 0 ? -input : input; }
+                Return_type to_positive (const Return_type input) { return input < 0 ? -input : input; }
                 template <class Return_type>
-                Return_type toNegative (const Return_type input) { return input > 0 ? -input : input; }
+                Return_type to_negative (const Return_type input) { return input > 0 ? -input : input; }
 
                 template <class Return_type>
                 // limits the value between lower_limit and upper_limit
@@ -548,16 +550,18 @@ namespace YH {
                 // #define b2d(val) binary_to_decimal(#val)
                 // largest_uint binary_to_decimal (const char *str);
 
+                // base switching functions have been copied to YHtextLib for further improvements for better user experience
+
                 // fundamentals of base switching functions
                 // convert input char to value
                 // returns -1 when input does not match 0-9, a-z, A-Z
-                int16_t charToVal (const char input);
+                int8_t char_to_val (const char input);
                 // convert input value to capital letter
                 // returns '\\0' when input is out of range 0-35
                 // returns '-' for -1
                 // returns '.' for -2
                 // returns '\0' for -255
-                char valToCapLetter (const int16_t input);
+                char val_to_cap_letter (const int16_t input);
                 // complicated functions converting bases of strings containing values
                 // converts inputed string to a base-10 value (supports strings with floating-points)
                 largest_float base_n_to_base_10 (const char *str, const uint16_t base_from, char* *remaining_unrecognised_str = NULL);
