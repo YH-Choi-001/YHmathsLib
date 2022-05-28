@@ -347,6 +347,12 @@ namespace YH {
                 largest_float power (const largest_float toPow, const largest_float index = 2.0);
                 // root a value with base
                 largest_float root (const largest_float toRoot, const largest_float base = 2.0);
+                // log a value with e
+                largest_float ln (const largest_float value);
+                // log a value with base 10
+                largest_float log (const largest_float value);
+                // log a value with any base
+                largest_float log (const largest_float base, const largest_float value);
                 #ifdef _LIBCPP_STRING
                 // root a value with a base to a std::string
                 std::string root_to_str (const largest_float toRoot, const largest_int base = 2, const uint8_t max_return_length = 10);
@@ -498,10 +504,14 @@ namespace YH {
                 // nPr == n! ÷ (n-r)!
                 largest_uint nPr (const largest_uint n, const largest_uint r);
 
-                // Highest common factor of 2 integers
-                largest_uint hcf (const largest_int a, const largest_int b);
+                // Highest common factor of 2 integers with the usage of Euclidean algorithm (modula free, suitable for AVR structures)
+                largest_uint hcf (largest_int a, largest_int b);
                 // Least common multiple of 2 integers
-                largest_uint lcm (const largest_int a, const largest_int b);
+                largest_uint lcm (largest_int a, largest_int b);
+                // Highest common factor of 2 integers with a traditional method
+                largest_uint hcf_trad (const largest_int a, const largest_int b);
+                // Least common multiple of 2 integers with a traditional method
+                largest_uint lcm_trad (const largest_int a, const largest_int b);
 
                 // simplify the numerator and denominator in a fraction
                 // return pointer of an [2] array in a faster process since both are integral types

@@ -746,6 +746,10 @@ YH::Lib::Func::maths::largest_float YH::Lib::Func::maths::root (const largest_fl
     return power_int_idx(   root_int_base( toPow, static_cast<largest_int>(get_result(0)) ), static_cast<largest_int>(get_result(1))   );
 }
 
+YH::Lib::Func::maths::largest_float YH::Lib::Func::maths::ln (const largest_float value) {
+    return ::log(value);
+}
+
 #ifdef _LIBCPP_STRING
 std::string YH::Lib::Func::maths::root_to_str (const largest_float toRoot, const largest_int base, const uint8_t max_return_length) {
     if (toRoot < 0) return "i";
@@ -1093,6 +1097,25 @@ YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::nPr (const largest_uint
     return to_return;
 }
 
+YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::hcf (largest_int a, largest_int b) {
+    if (!(a && b)) return 1;
+    if (a < 0) a = -a;
+    if (b < 0) b = -b;
+    while (a != b) {
+        if (a > b)
+            a -= b;
+        else
+            b -= a;
+    }
+    return a;
+}
+
+YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::lcm (largest_int a, largest_int b) {
+    if (a < 0) a = -a;
+    if (b < 0) b = -b;
+    return (a * b) / hcf(a, b);
+}
+
 // 4, 5 result 1
 // 24, 48 result 24
 // -4, 4 result 4
@@ -1100,7 +1123,7 @@ YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::nPr (const largest_uint
 // -12, -8 result 4 (-3 * 4, -2 * 4)
 // 4.5, 7.5 result 1.5 but floating_point_number not supported
 // should convert to 45, 75 before calling function
-YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::hcf (const largest_int a, const largest_int b) {
+YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::hcf_trad (const largest_int a, const largest_int b) { // remark: hcf(a, b) == a * b / lcm(a, b)
     const largest_uint a_positive = TO_POSITIVE(a);
     const largest_uint b_positive = TO_POSITIVE(b);
     // const long double ald = static_cast<long double>(YH::Lib::Func::maths::toPositive(a));
@@ -1108,18 +1131,18 @@ YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::hcf (const largest_int 
     // dangerous
     // long double power10 = 1;
     // for (power10 = 1; a != YH::Lib::Func::maths::rnddn(a) || b != YH::Lib::Func::maths::rnddn(b); a *= 10, b *= 10, power10 *= 10) { }
-    for (largest_uint i = (a_positive > b_positive ? a_positive : b_positive); i > 0ULL; i--) {
+    for (largest_uint i = (a_positive < b_positive ? a_positive : b_positive); i > 1; i--) {
         /*
         if (ald / i == static_cast<long double>(YH::Lib::Func::maths::rnddn(ald / i)) &&
             bld / i == static_cast<long double>(YH::Lib::Func::maths::rnddn(bld / i)))
             return i;
         */
-        if ( !(a_positive % i) && !(b_positive % i) ) return i;
+        if ( !((a_positive % i) || (b_positive % i)) ) return i;
     }
-    return 0ULL;
+    return 1;
 }
 
-YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::lcm (const largest_int a, const largest_int b) {
+YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::lcm_trad (const largest_int a, const largest_int b) { // remark: lcm(a, b) == a * b / hcf(a, b)
     const largest_uint a_positive = TO_POSITIVE(a);
     const largest_uint b_positive = TO_POSITIVE(b);
     const largest_uint biggest_cm = a_positive * b_positive; // biggest common multiplyer
@@ -1132,7 +1155,7 @@ YH::Lib::Func::maths::largest_uint YH::Lib::Func::maths::lcm (const largest_int 
             i / bld == static_cast<long double>(YH::Lib::Func::maths::rnddn(i / bld)))
             return i;
         */
-        if ( !(i % a_positive) && !(i % b_positive) ) return i;
+        if ( !((i % a_positive) || (i % b_positive)) ) return i;
     }
     return biggest_cm;
 }
@@ -1141,7 +1164,7 @@ const YH::Lib::Func::maths::largest_float *YH::Lib::Func::maths::fract_simp_int 
     largest_int base = static_cast<largest_int>(hcf(up, low));
     if (up < 0 && low < 0) base = (-base);
     largest_float to_return [2] = {static_cast<largest_float>(up / base), static_cast<largest_float>(low / base)};
-    pvt::assignToArray (to_return, 2);
+    pvt::assignToArray(to_return, 2);
     return pvt::result.raw_ptr();
 }
 
@@ -2190,6 +2213,42 @@ const YH::Lib::Func::maths::largest_float *YH::Lib::Func::maths::intercept_of_2_
     }
     return pvt::result.raw_ptr();
 }
+
+// cubic equation
+/*
+// WARNING: this program can only find 1 - 2 roots, but will return i when there are 3 roots
+Mem clr:
+? -> A:
+? -> B:
+? -> C:
+? -> D:
+////////// -b^3÷27a^3 + bc÷6a^2 - d/2a -> d:
+bc÷6a^2 - b^3÷27a^3 - d/2a -> d:
+sqrt(d^2 + (c÷3a - b^2÷9a^2)^3) -> y:
+cbrt(d + y) + cbrt(d - y) - b÷3a -> x output
+
+// right now, x == n/m
+
+Lbl 1:
+1 M+:
+XM: fix 0: Rnd: Norm 1:
+XM != Ans => Goto 1:
+// M is numerator, -XAns is denominator
+
+                // -XM -> X:
+                // // M is m, X is n in the form of (mx - n)
+
+                // A÷M -> A:
+                // (B-XA)÷M -> B:
+                // (C-XB)÷M -> C:
+        // // a quadratic equation AX^2 + BX + C = 0 is formed
+
+A÷M -> A:
+B÷M+AX -> B:
+C÷M+BX -> C:
+// a quadratic equation AX^2 + BX + C = 0 is formed
+
+//*/
 
 const YH::Lib::Func::maths::largest_float &YH::Lib::Func::maths::get_result (const largest_uint index) {
     return pvt::result.idx(index);

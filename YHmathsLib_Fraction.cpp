@@ -134,7 +134,7 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
             return static_cast<Func::maths::largest_int>(0x7FFEE245EAC0);
         else if (this->special_states == NOT_A_NUM_FLOATING)
             return 0;
-        return (upper_val / lower_val) + ( (upper_val > 0LL) && (upper_val % lower_val) );
+        return (upper_val / lower_val) + ( (upper_val > 0) && (upper_val % lower_val) );
     }
 
     YH::Lib::Func::maths::largest_float YH::Lib::Fraction::floated_num () const {
@@ -520,7 +520,7 @@ YH::Lib::Fraction YH::Lib::Fraction::create_inf_obj () const {
                 const largest_int rhs_low = rhs.denominator(); // 1
                 // const largest_int base = YH::Lib::Func::maths::lcm(lhs_low, rhs_low);
                 YH::Lib::Func::maths::fract_simp_int(lhs_up * rhs_low, lhs_low * rhs_up);
-                YH::Lib::Fraction b_times_rnddned_a_over_b ( rhs_up * ( static_cast<largest_int>(get_result(0)) / static_cast<largest_int>(get_result(1)) ), rhs_low );
+                YH::Lib::Fraction b_times_rnddned_a_over_b ( rhs_up * static_cast<largest_int>(get_result(0)) / static_cast<largest_int>(get_result(1)), rhs_low );
                 return sub(lhs, b_times_rnddned_a_over_b);
                 // (lhs.num % rhs.num) / base
                 // 1/3 % 1/4 ...
